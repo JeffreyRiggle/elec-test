@@ -1,0 +1,14 @@
+{
+  "name": "elec-test",
+  "version": "1.0.0",
+  "description": "electron test",
+  "main": "main.js",
+  "repository": "https://github.com/JeffreyRiggle/elec-test",
+  "license": "MIT",
+  "dependencies": {
+    "electron": "^1.7.10"
+  },
+  "scripts": {
+    "dev": "./node_modules/.bin/electron ."
+  }
+}
