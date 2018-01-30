@@ -1,6 +1,7 @@
-const {app, BrowserWindow, Menu, Tray, dialog} = require('electron');
+const {app, BrowserWindow, Menu, Tray, dialog, remote, ipcMain} = require('electron');
 const path = require('path');
 const url = require('url');
+const systemTray = require(path.resolve('src/native/systemTrayManager.js'));
 
 let win, tray;
 
@@ -39,54 +40,56 @@ function setupPowerListeners() {
 };
 
 function setupSysTray() {
-    tray = new Tray(path.join(__dirname, 'icon.png'));
-    tray.on('click', () => {
+    systemTray.setIcon(path.join(__dirname, 'icon.png'));
+    systemTray.onClick(() => {
         win.show();
     });
 
-    let contextMenu = Menu.buildFromTemplate([
-        {
-            label: 'Test',
-            submenu: [
-                {
-                    label: 'Test Item 1',
-                    click: () => {
-                        dialog.showMessageBox(win, {
-                            title: 'Context Click',
-                            message: 'Item 1 pressed'
-                        });
-                    }
-                },
-                {
-                    label: 'Test Item 2',
-                    click: () => {
-                        dialog.showMessageBox(win, {
-                            title: 'Context Click',
-                            message: 'Item 2 pressed'
-                        });
-                    }
-                },
-                {
-                    label: 'Test Item 3',
-                    click: () => {
-                        dialog.showMessageBox(win, {
-                            title: 'Context Click',
-                            message: 'Item 3 pressed'
-                        });
-                    }
-                }
-            ]
-        },
-        {
-            label: 'Exit',
-            click: () => {
-                app.quit();
-            }
-        }
-    ]);
+    systemTray.setTooltip('Electron test application');
 
-    tray.setToolTip('Electron test application');
-    tray.setContextMenu(contextMenu);
+    systemTray.addMenuItem('Test', {
+        label: 'Test',
+        submenu: [
+            {
+                label: 'Test Item 1',
+                click: () => {
+                    dialog.showMessageBox(win, {
+                        title: 'Context Click',
+                        message: 'Item 1 pressed'
+                    });
+                }
+            },
+            {
+                label: 'Test Item 2',
+                click: () => {
+                    dialog.showMessageBox(win, {
+                        title: 'Context Click',
+                        message: 'Item 2 pressed'
+                    });
+                }
+            },
+            {
+                label: 'Test Item 3',
+                click: () => {
+                    dialog.showMessageBox(win, {
+                        title: 'Context Click',
+                        message: 'Item 3 pressed'
+                    });
+                }
+            }
+        ]
+    });
+
+    systemTray.addMenuItem('Exit', {
+        label: 'Exit',
+        click: () => {
+            app.quit();
+        }
+    });
+
+    ipcMain.on('tray', (event, tray) => {
+        systemTray.addMenuItem(tray.id, tray.item);
+    });
 };
 
 app.on('ready', createWindow);
