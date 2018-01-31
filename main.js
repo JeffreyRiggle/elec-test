@@ -1,9 +1,11 @@
-const {app, BrowserWindow, Menu, Tray, dialog, remote, ipcMain} = require('electron');
+const {app, BrowserWindow, Menu, Tray, remote, ipcMain} = require('electron');
 const path = require('path');
 const url = require('url');
 const systemTray = require(path.resolve('src/native/systemTrayManager.js'));
+const dialogManager = require(path.resolve('src/native/dialogManager.js'));
+const icpManager = require(path.resolve('src/native/ipcManager.js'));
 
-let win, tray;
+let win;
 
 function createWindow() {
     win = new BrowserWindow({width: 800, height: 600});
@@ -23,8 +25,10 @@ function createWindow() {
         win = null;
     });
 
+    dialogManager.setWindow(win);
     setupSysTray();
     setupPowerListeners();
+    icpManager.start();
 };
 
 function setupPowerListeners() {
@@ -53,7 +57,7 @@ function setupSysTray() {
             {
                 label: 'Test Item 1',
                 click: () => {
-                    dialog.showMessageBox(win, {
+                    dialogManager.showMessage({
                         title: 'Context Click',
                         message: 'Item 1 pressed'
                     });
@@ -62,7 +66,7 @@ function setupSysTray() {
             {
                 label: 'Test Item 2',
                 click: () => {
-                    dialog.showMessageBox(win, {
+                    dialogManager.showMessage({
                         title: 'Context Click',
                         message: 'Item 2 pressed'
                     });
@@ -71,7 +75,7 @@ function setupSysTray() {
             {
                 label: 'Test Item 3',
                 click: () => {
-                    dialog.showMessageBox(win, {
+                    dialogManager.showMessage({
                         title: 'Context Click',
                         message: 'Item 3 pressed'
                     });
@@ -85,10 +89,6 @@ function setupSysTray() {
         click: () => {
             app.quit();
         }
-    });
-
-    ipcMain.on('tray', (event, tray) => {
-        systemTray.addMenuItem(tray.id, tray.item);
     });
 };
 

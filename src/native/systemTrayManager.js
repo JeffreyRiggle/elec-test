@@ -47,7 +47,6 @@ function updateMenu() {
     let items = [];
     menuItems.forEach((value, key, m) => {
         items.push(value);
-    
     });
 
     tray.setContextMenu(Menu.buildFromTemplate(items));

@@ -10,10 +10,15 @@ class App extends React.Component {
             id: 'React Test',
             item: {
                 label: 'React Test',
-                click: () => {
-                    console.log('Hello from react');
-                }
+                icon: 'react.ico'
             }
+        });
+
+        ipcRenderer.on('trayReact Testclick', () => {
+            ipcRenderer.send('messageDialog', {
+                title: 'Context Click',
+                message: 'Hello from React!'
+            });
         });
     }
 
